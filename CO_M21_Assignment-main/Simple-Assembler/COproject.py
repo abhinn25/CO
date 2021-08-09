@@ -72,3 +72,27 @@ def Xor(reg1,reg2,reg3):
 
 def Invert (reg1, reg2,):
     registers[reg1][1] = ~registers[reg2][2]
+
+f = open("input.txt", "r")
+lines = [line.rstrip().split() for line in f]
+final_input=[]
+
+label_list=[]       # stores label with its memory address. example - ["label:" ,"11"]
+
+var_list=[]         # stores variable instructions
+
+for inst in lines:
+    program_counter=0
+
+    if(inst[0]=="var"):
+        var_list.append(inst)
+        continue
+    if(inst[0][-1]==':'):
+        label_list.append([inst[0],program_counter])
+        final_input.append(inst)
+        program_counter+=1
+    else:
+        final_input.append(inst)
+        program_counter+=1
+
+final_input.extend(var_list)
