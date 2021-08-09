@@ -111,8 +111,21 @@ print(label_list)
 print(final_input)
 
 for inst in final_input:
-  
-        
+    if inst[0] == "add":
+        print(OPcode["add"][0]+registers[inst[1]][0]+registers[inst[2]][0]+registers[inst[3]][0])
 
+    elif inst[0] == "sub":
+        print(OPcode["sub"][0] + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
 
+    elif inst[0] == "mul":
+        print(OPcode["mul"][0] + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
 
+    elif inst[0] == "xor":
+        print(OPcode["xor"][0] + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+    elif inst[0] == "or":
+        print(OPcode["or"][0] + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+    elif inst[0] == "and":
+        print(OPcode["and"][0] + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+    elif inst[0] == "div":
+        print(OPcode["div"][0] + registers[inst[1]][0] + registers[inst[2]][0])
+    elif inst[0]=="rs":
