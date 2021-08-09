@@ -43,3 +43,32 @@ def subtraction(reg1, reg2, reg3):
         registers[reg1][1] = registers[reg2][1] - registers[reg3][1]
 
 
+def multiply(reg1, reg2, reg3):
+    if registers[reg2][1] * registers[reg3][1] > 255:
+        registers[reg1][1] = 0
+        registers["flag"][1][0] = 1
+    else:
+        registers[reg1][1] = registers[reg2][1] * registers[reg3][1]
+
+
+def divide(reg3, reg4):
+    registers["R0"][1] = registers[reg3][1] / registers[reg4][1]
+    registers["R1"][1] = registers[reg3][1] % registers[reg4][1]
+
+
+def right_shift(reg1, Imm):
+    registers[reg1][1] = registers[reg1][1] >> Imm
+
+def left_shift(reg1, Imm):
+    registers[reg1][1] = registers[reg1][1] <<Imm
+
+def Or (reg1, reg2, reg3):
+    registers[reg1][1] = registers[reg2][1]|registers[reg2][1]
+def And(reg1,reg2,reg3):
+    registers[reg1][1] = registers[reg2][1]&registers[reg2][1]
+def Xor(reg1,reg2,reg3):
+    registers[reg1][1] = registers[reg2][1]^registers[reg2][1]
+    
+
+def Invert (reg1, reg2,):
+    registers[reg1][1] = ~registers[reg2][2]
