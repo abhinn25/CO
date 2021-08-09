@@ -1,32 +1,33 @@
-OPcode = {"add":{"00000","A"} ,
-          "sub":{"00001","A"} ,
-          "mul":{"00110","A"} ,
-          "xor":{"01010","A"} ,
-          "or":{"01011", "A"} ,
-          "and":{"01100","A"} ,
-          "mov"
-          "mov":{"00011","C"} ,
-          "div":{"00111","C"} ,
-          "not":{"01101","C"} ,
-          "cmp":{"01110","C"} ,
-          "ld":{"00100", "D"} ,
-          "st":{"00101", "D"} ,
-          "jmp":{"01111","E"} ,
-          "jgt":{"10001","E"} ,
-          "je":{"10010", "E"} ,
-          "jlt":{"10000","E"} ,
-          "hlt":{"10011","F"} ,
-
+OPcode = {"add":    ("00000", "A"),
+          "sub":    ("00001", "A"),
+          "mul":    ("00110", "A"),
+          "xor":    ("01010", "A"),
+          "or":     ("01011", "A"),
+          "and":    ("01100", "A"),
+          "movimi": ("00010", "B"),
+          "movreg": ("00011", "C"),
+          "div":    ("00111", "C"),
+          "not":    ("01101", "C"),
+          "cmp":    ("01110", "C"),
+          "ld":     ("00100", "D"),
+          "st":     ("00101", "D"),
+          "jmp":    ("01111", "E"),
+          "jgt":    ("10001", "E"),
+          "je":     ("10010", "E"),
+          "jlt":    ("10000", "E"),
+          "hlt":    ("10011", "F"),
           }
 
-registers = {"R0":["000",-1],
-             "R1":["001",-1],
-             "R2":["010",-1],
-             "R3":["011",-1],
-             "R4":["100",-1],
-             "R5":["101",-1],
-             "R6":["110",-1]
+registers = {"R0":   ["000", -10],
+             "R1":   ["001", -10],
+             "R2":   ["010", -10],
+             "R3":   ["011", -10],
+             "R4":   ["100", -10],
+             "R5":   ["101", -10],
+             "R6":   ["110", -10],
+             "flag": ["111", [0, 0, 0, 0]]  # V / L / G / E
              }
+
 def addition(reg1, reg2, reg3):
     if registers[reg2][1] + registers[reg3][1] > 255:
         registers[reg1][1] = 0
@@ -75,6 +76,7 @@ def Invert (reg1, reg2,):
 
 f = open("input.txt", "r")
 lines = [line.rstrip().split() for line in f]
+print(lines)
 final_input=[]
 
 label_list=[]       # stores label with its memory address. example - ["label:" ,"11"]
@@ -82,17 +84,29 @@ label_list=[]       # stores label with its memory address. example - ["label:" 
 var_list=[]         # stores variable instructions
 program_counter=0
 for inst in lines:
-    
+    if inst!=[]:
 
-    if(inst[0]=="var"):
-        var_list.append(inst)
-        continue
-    if(inst[0][-1]==':'):
-        label_list.append([inst[0],program_counter])
-        final_input.append(inst)
-        program_counter+=1
-    else:
-        final_input.append(inst)
-        program_counter+=1
+        if(inst[0]=="var"):
+            var_list.append(inst)
+            continue
+        if(inst[0][-1]==':'):
+            label_list.append([inst[0],program_counter])
+            final_input.append(inst)
+            program_counter+=1
+        else:
+            final_input.append(inst)
+            program_counter+=1
 
 final_input.extend(var_list)
+
+print(label_list)
+print(final_input)
+
+for inst in final_input:
+    if inst[0]== "add":
+        addition(inst[1], inst[2], inst[3])
+    elif inst[0]== "sub":
+        subtraction(inst[1], inst[2], inst[3])
+    elif inst[0]== "mul":
+        multiply(inst[1], inst[2], inst[3])
+    elif
