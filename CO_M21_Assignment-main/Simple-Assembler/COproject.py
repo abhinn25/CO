@@ -27,7 +27,7 @@ registers = {"R0":["000",-1],
              "R5":["101",-1],
              "R6":["110",-1]
              }
-def add(reg1, reg2, reg3):
+def addition(reg1, reg2, reg3):
     if registers[reg2][1] + registers[reg3][1] > 255:
         registers[reg1][1] = 0
         registers["flag"][1][0] = 1
@@ -35,7 +35,7 @@ def add(reg1, reg2, reg3):
         registers[reg1][1] = registers[reg2][1] + registers[reg3][1]
 
 
-def sub(reg1, reg2, reg3):
+def subtraction(reg1, reg2, reg3):
     if registers[reg2][1] - registers[reg3][1] < 0:
         registers[reg1][1] = 0
         registers["flag"][1][0] = 1
