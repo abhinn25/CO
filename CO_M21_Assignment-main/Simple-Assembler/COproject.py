@@ -80,9 +80,9 @@ final_input=[]
 label_list=[]       # stores label with its memory address. example - ["label:" ,"11"]
 
 var_list=[]         # stores variable instructions
-
+program_counter=0
 for inst in lines:
-    program_counter=0
+    
 
     if(inst[0]=="var"):
         var_list.append(inst)
