@@ -25,9 +25,10 @@ registers = {"R0": ["000", -10],
              "R4": ["100", -10],
              "R5": ["101", -10],
              "R6": ["110", -10],
-             "flag": ["111", [0, 0, 0, 0]]  # V / L / G / E
+             "FLAGS": ["111", [0, 0, 0, 0]]  # V / L / G / E
              }
 
+f2 = open("output.txt", "w+")
 
 def addition(reg1, reg2, reg3):
     if registers[reg2][1] + registers[reg3][1] > 255:
@@ -112,37 +113,60 @@ for i in (range(len(final_input))):
             final_input[i].append(i)
             var_list.append(final_input[i])
 
-#print(var_list)
-#print(label_list)
-#print(final_input)
+#f2.write(var_list)
+#f2.write(label_list)
+#f2.write(final_input)
 
 for inst in final_input:
     if inst[0] == "add":
-        print(OPcode["add"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write(OPcode["add"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write("\n")
 
     elif inst[0] == "sub":
-        print(OPcode["sub"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write(OPcode["sub"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write("\n")
 
     elif inst[0] == "mul":
-        print(OPcode["mul"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write(OPcode["mul"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write("\n")
 
     elif inst[0] == "xor":
-        print(OPcode["xor"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write(OPcode["xor"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write("\n")
 
     elif inst[0] == "or":
-        print(OPcode["or"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write(OPcode["or"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write("\n")
 
     elif inst[0] == "and":
-        print(OPcode["and"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write(OPcode["and"][0] + "00" +registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
+        f2.write("\n")
 
     elif inst[0] == "div":
-        print(OPcode["div"][0] + "00000" +registers[inst[1]][0] + registers[inst[2]][0])
+        f2.write(OPcode["div"][0] + "00000" +registers[inst[1]][0] + registers[inst[2]][0])
+        f2.write("\n")
 
     elif inst[0] == "not":
-        print(OPcode["not"][0] + "00000" +registers[inst[1]][0] + registers[inst[2]][0])
+        f2.write(OPcode["not"][0] + "00000" +registers[inst[1]][0] + registers[inst[2]][0])
+        f2.write("\n")
 
     elif inst[0] == "cmp":
-        print(OPcode["cmp"][0] + "00000" +registers[inst[1]][0] + registers[inst[2]][0])
+        f2.write(OPcode["cmp"][0] + "00000" +registers[inst[1]][0] + registers[inst[2]][0])
+        f2.write("\n")
+
+    elif inst[0] == "ls":
+        value = int((inst[2])[1:])
+        s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
+
+        f2.write(OPcode["ls"][0] + registers[inst[1]][0]+s +"gg")
+        f2.write("\n")
+
+    elif inst[0] == "rs":
+        value = int((inst[2])[1:])
+        s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
+
+        f2.write(OPcode["rs"][0] + registers[inst[1]][0]+s + "gg")
+        f2.write("\n")
 
     elif inst[0] == "ld":
         varname = inst[2]
@@ -153,7 +177,8 @@ for inst in final_input:
 
         s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
 
-        print(OPcode["ld"][0] + registers[inst[1]][0]+s)
+        f2.write(OPcode["ld"][0] + registers[inst[1]][0]+s)
+        f2.write("\n")
 
     elif inst[0] == "st":
         varname = inst[2]
@@ -164,7 +189,8 @@ for inst in final_input:
 
         s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
 
-        print(OPcode["st"][0] + registers[inst[1]][0]+s)
+        f2.write(OPcode["st"][0] + registers[inst[1]][0]+s)
+        f2.write("\n")
 
     elif inst[0] == "jmp:":
         labelname = inst[1] + ":"
@@ -175,8 +201,8 @@ for inst in final_input:
 
         s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
 
-        print(OPcode["jmp"][0] + "000" + s)
-
+        f2.write(OPcode["jmp"][0] + "000" + s)
+        f2.write("\n")
 
     elif inst[0] == "jlt:":
         labelname = inst[1] + ":"
@@ -187,7 +213,8 @@ for inst in final_input:
 
         s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
 
-        print(OPcode["jlt"][0] + "000" + s)
+        f2.write(OPcode["jlt"][0] + "000" + s)
+        f2.write("\n")
 
     elif inst[0] == "jgt:":
         labelname = inst[1] + ":"
@@ -198,8 +225,8 @@ for inst in final_input:
 
         s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
 
-        print(OPcode["jgt"][0] + "000" + s)
-
+        f2.write(OPcode["jgt"][0] + "000" + s)
+        f2.write("\n")
 
     elif inst[0] == "je:":
         labelname = inst[1]+":"
@@ -210,15 +237,20 @@ for inst in final_input:
 
         s = "0" * (8-len(bin(value)[2:])) + bin(value)[2:]
 
-        print(OPcode["je"][0] + "000" + s)
+        f2.write(OPcode["je"][0] + "000" + s)
+        f2.write("\n")
 
     elif inst[0]=="hlt":
-        print(OPcode["hlt"][0]+"00000000000")
+        f2.write(OPcode["hlt"][0]+"00000000000")
+        f2.write("\n")
 
     elif inst[0] == "mov":
         if inst[2][0] == "$":
             value = int((inst[2])[1:])
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-            print(OPcode["movimi"][0] + registers[inst[1]][0] + s)
+            f2.write(OPcode["movimi"][0] + registers[inst[1]][0] + s)
+            f2.write("\n")
+
         else:
-            print(OPcode["movreg"][0] +"00000"+ registers[inst[1]][0] + registers[inst[2]][0])
+            f2.write(OPcode["movreg"][0] +"00000"+ registers[inst[1]][0] + registers[inst[2]][0])
+            f2.write("\n")
