@@ -93,6 +93,15 @@ def Xor(reg1, reg2, reg3):
 def Invert(reg1, reg2):
     registers[reg1][1] = ~registers[reg2][2]
 
+def halt_checker(lis):
+    for i in range(len(lis)-1):
+        for j in lis[i]:
+            if j=='hlt':
+                print("hlt error",i)
+                return False
+
+    return True
+
 
 def errorA(lisa, lno):
     if len(lisa) == 4:
@@ -162,12 +171,12 @@ def errorE(lise, lno):
 
 
 def error(lis):
-
+    halt_checker(lis)
     for i in range(len(lis)):
         ins = lis[i]
         if ins[0] == "mov":
             if len(ins) == 3:
-                if ins[1] in register_wo_flag.keys() and (ins[2] in register_wo_flag.keys() or (ins[2][0] == "$" and 0 <= int(ins[2][1:]) <= 255)):
+                if ins[1] in register_wo_flag.keys() and (ins[2] in registers.keys() or (ins[2][0] == "$" and 0 <= int(ins[2][1:]) <= 255)):
                    continue # have to deal intermeditae error here
 
                 else:
@@ -179,7 +188,6 @@ def error(lis):
                 print("wrong syntax error", i)
 
                 return False
-
 
         if ins[0] == "var":
             if len(ins) == 3:
@@ -235,8 +243,14 @@ def error(lis):
     return True
 
 
+
+
 f = open("input.txt", "r")
-lines = [line.rstrip().split() for line in f]
+lines=[]
+lines2 = [line.rstrip().split() for line in f]
+for i in lines2:
+    if i!=[]:
+        lines.append(i)
 
 final_input = []
 label_list = []  # stores label with its memory address. example - ["label:" ,"11"]
@@ -245,19 +259,18 @@ var_dic = {}
 var_list = []
 temp_var_list = []  # stores variable instructions
 program_counter = 0
-
+print(lines)
 
 for inst in lines:
-    if inst != []:
-            if (inst[0] == "var"):
+        if (inst[0] == "var"):
                 temp_var_list.append(inst)
                 continue
-            if (inst[0][-1] == ':'):
+        if (inst[0][-1] == ':'):
                 label_dic[inst[0]] = program_counter
                 label_list.append([inst[0], program_counter])
                 final_input.append(inst)
                 program_counter += 1
-            else:
+        else:
                 final_input.append(inst)
                 program_counter += 1
 
@@ -275,7 +288,7 @@ for i in (range(len(final_input))):
 
 print(var_dic)
 print(label_dic)
-
+print(lines)
 #print(var_list)
 #print(label_list)
 #print(final_input)
@@ -286,52 +299,39 @@ if error(lines) == True:
         if inst[0] == "add":
             print(OPcode["add"][0] + "00" + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
 
-
         elif inst[0] == "sub":
             print(OPcode["sub"][0] + "00" + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
-
 
         elif inst[0] == "mul":
             print(OPcode["mul"][0] + "00" + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
 
-
         elif inst[0] == "xor":
             print(OPcode["xor"][0] + "00" + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
-
 
         elif inst[0] == "or":
             print(OPcode["or"][0] + "00" + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
 
-
         elif inst[0] == "and":
             print(OPcode["and"][0] + "00" + registers[inst[1]][0] + registers[inst[2]][0] + registers[inst[3]][0])
-
 
         elif inst[0] == "div":
             print(OPcode["div"][0] + "00000" + registers[inst[1]][0] + registers[inst[2]][0])
 
-
         elif inst[0] == "not":
             print(OPcode["not"][0] + "00000" + registers[inst[1]][0] + registers[inst[2]][0])
-
 
         elif inst[0] == "cmp":
             print(OPcode["cmp"][0] + "00000" + registers[inst[1]][0] + registers[inst[2]][0])
 
-
         elif inst[0] == "ls":
             value = int((inst[2])[1:])
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["ls"][0] + registers[inst[1]][0] + s + "gg")
-
 
         elif inst[0] == "rs":
             value = int((inst[2])[1:])
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["rs"][0] + registers[inst[1]][0] + s + "gg")
-
 
         elif inst[0] == "ld":
             varname = inst[2]
@@ -339,11 +339,8 @@ if error(lines) == True:
             for temp in var_list:
                 if temp[1] == varname:
                     value = temp[2]
-
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["ld"][0] + registers[inst[1]][0] + s)
-
 
         elif inst[0] == "st":
             varname = inst[2]
@@ -351,11 +348,8 @@ if error(lines) == True:
             for temp in var_list:
                 if temp[1] == varname:
                     value = temp[2]
-
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["st"][0] + registers[inst[1]][0] + s)
-
 
         elif inst[0] == "jmp:":
             labelname = inst[1] + ":"
@@ -363,11 +357,8 @@ if error(lines) == True:
             for temp in label_list:
                 if temp[0] == labelname:
                     value = temp[1]
-
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["jmp"][0] + "000" + s)
-
 
         elif inst[0] == "jlt:":
             labelname = inst[1] + ":"
@@ -375,11 +366,8 @@ if error(lines) == True:
             for temp in label_list:
                 if temp[0] == labelname:
                     value = temp[1]
-
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["jlt"][0] + "000" + s)
-
 
         elif inst[0] == "jgt:":
             labelname = inst[1] + ":"
@@ -387,11 +375,8 @@ if error(lines) == True:
             for temp in label_list:
                 if temp[0] == labelname:
                     value = temp[1]
-
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["jgt"][0] + "000" + s)
-
 
         elif inst[0] == "je:":
             labelname = inst[1] + ":"
@@ -399,11 +384,8 @@ if error(lines) == True:
             for temp in label_list:
                 if temp[0] == labelname:
                     value = temp[1]
-
             s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
-
             print(OPcode["je"][0] + "000" + s)
-
 
         elif inst[0] == "hlt":
             print(OPcode["hlt"][0] + "00000000000")
@@ -413,7 +395,6 @@ if error(lines) == True:
                 value = int((inst[2])[1:])
                 s = "0" * (8 - len(bin(value)[2:])) + bin(value)[2:]
                 print(OPcode["movimi"][0] + registers[inst[1]][0] + s)
-
 
             else:
                 print(OPcode["movreg"][0] + "00000" + registers[inst[1]][0] + registers[inst[2]][0])
