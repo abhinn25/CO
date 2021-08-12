@@ -4,6 +4,8 @@ OPcode = {"add": ("00000", "A"),
           "xor": ("01010", "A"),
           "or": ("01011", "A"),
           "and": ("01100", "A"),
+          "rs": ("01000", "B"),
+          "ls": ("01001", "B"),
           "movimi": ("00010", "B"),
           "movreg": ("00011", "C"),
           "div": ("00111", "C"),
@@ -35,11 +37,15 @@ register_wo_flag = {"R0": ["000", -10],
                     "R4": ["100", -10],
                     "R5": ["101", -10],
                     "R6": ["110", -10],
-                    "FLAGS": ["111", [0, 0, 0, 0]]  # V / L / G / E
                     }
+
 
 f2 = open("output.txt", "w+")
 
+def errorlno(lno):
+    for i in range(len(lines2)):
+        if lines2[i] == lines[lno]:
+            return i+1
 
 def addition(reg1, reg2, reg3):
     if registers[reg2][1] + registers[reg3][1] > 255:
@@ -97,7 +103,8 @@ def halt_checker(lis):
     flag = 0
     for j in range(len(lis)):
         if "hlt" in lis[j]:
-            lno = j
+            if(flag==0):
+                lno = j
             flag += 1
 
     if flag == 0:
@@ -107,10 +114,10 @@ def halt_checker(lis):
         if lis[-1][-1] == "hlt":
             return True
         else:
-            print("hlt before termination" , lno+1)
+            print("hlt before termination" , errorlno(lno))
             return False
     else:
-        print("hlt before termination" , lno+1)
+        print("hlt before termination" , errorlno(lno))
         return False
 
 
@@ -122,7 +129,7 @@ def var_checker(lis):
 
         for i in range(len(lis)):
             if lis[i][0] == "var"  and len(lis[i]) == 3 and lis[i][1] in OPcode.keys() :
-                print("inst error" , i+1)
+                print("inst error" , errorlno(i))
                 return False
             if(lis[i][0] == "var" ):
                 count += 1
@@ -141,13 +148,14 @@ def var_checker(lis):
                 if (lis[t1][0] == "var"):
                     lno = t1
                     break
-            print("var discont" , t1 + 1)
+            print("var discont" , errorlno(t1))
             return False
     else:
         for i in range(len(lis)):
             if(lis[i][0]=="var"):
-                print("var beech me h" , i+1)
+                print("var beech me h" , errorlno(i))
                 return False
+
 
 
 
@@ -156,26 +164,30 @@ def errorA(lisa, lno):
         if lisa[1] in register_wo_flag.keys() and lisa[2] in register_wo_flag.keys() and lisa[3] in register_wo_flag.keys():
             return True
         else:
-            print("register name error", lno+1)
+            print("register name error", errorlno(lno))
             return False
     else:
-        print("wrong syntax error", lno+1)
+        print("wrong syntax error", errorlno(lno))
         return False
 
 
 def errorB(lisb, lno):
     if len(lisb) == 3:
-        if lisb[1] in register_wo_flag.keys() and lisb[2][0] == "$" and 0 <= lisb[2][1:] <= 255:
+        if lisb[1] in register_wo_flag.keys() and lisb[2][0] == "$" and lisb[2][1:].isnumeric() and 0 <= int(lisb[2][1:]) <= 255:
             return True
-        elif lisb[2][1:]<0 or lisb[2][1:]>255:
-            print("IMMEDIATE out of range",lno+1)
+        elif(lisb[2][1:].isnumeric() == False):
+            print("syntax error" , errorlno(lno))
+            return False
+
+        elif int(lisb[2][1:])<0 or int(lisb[2][1:])>255:
+            print("IMMEDIATE out of range",errorlno(lno))
             return False
         else:
-            print("register name error", lno+1)
+            print("register name error", errorlno(lno))
             return False
 
     else:
-        print("wrong syntax error", lno+1)
+        print("wrong syntax error", errorlno(lno))
         return False
 
 
@@ -184,10 +196,10 @@ def errorC(lisa, lno):
         if lisa[1] in register_wo_flag.keys() and lisa[2] in register_wo_flag.keys():
             return True
         else:
-            print("register name error", lno+1)
+            print("register name error", errorlno(lno))
             return False
     else:
-        print("wrong syntax error", lno+1)
+        print("wrong syntax error", errorlno(lno))
         return False
 
 
@@ -196,13 +208,17 @@ def errorD(lisd, lno):
         if lisd[1] in register_wo_flag.keys() and lisd[2] in var_dic.keys():
             return True
         elif lisd[1] not in register_wo_flag.keys():
-             print("reggister error",lno+1)
+             print("register error", errorlno(lno))
              return False
-        else:
-            print("use of undefinded variables ",lno+1)
+        elif lisd[1] in register_wo_flag.keys() and lisd[2]+":" in label_dic.keys():
+            print("misuse of label as variable ", errorlno(lno))
             return False
+        else:
+            print("use of un defined variable" , errorlno(lno) )
+            return False
+
     else:
-        print("wrong syntax error", lno+1)
+        print("wrong syntax error", errorlno(lno) )
         return False
 
 
@@ -211,18 +227,18 @@ def errorE(lise, lno):
         if lise[1] in label_dic:
             return True
         else:
-            print("Use of undefined label ", lno+1)
+            print("Use of undefined label ", errorlno(lno) )
             return False
     else:
-        print("wrong syntax error", lno+1)
+        print("wrong syntax error", errorlno(lno) )
         return False
 
 
 def error(lis):
-    
+
     if var_checker(lis) == False:
         return False
-    
+
     for i in range(len(lis)):
         ins = lis[i]
         if ins[0] == "mov":
@@ -231,35 +247,40 @@ def error(lis):
                    continue # have to deal intermeditae error here
 
                 else:
-                    print("register name error", i+1)
+                    print("register name error", errorlno(i) )
 
                     return False
 
             else:
-                print("wrong syntax error", i+1)
+                print("wrong syntax error", errorlno(i))
 
                 return False
 
         if ins[0][-1] == ":":
+
+            if len(ins) == 1:
+                print("invalid ins")
+                return False
+
             if ins[1] in OPcode.keys():
                 if OPcode[ins[1]][1] == "A":
 
-                    if errorA(ins, i) == False:
+                    if errorA(ins[1:], i) == False:
                         return False
                 elif OPcode[ins[1]][1] == "B":
-                    if errorB(ins, i) == False:
+                    if errorB(ins[1:], i) == False:
                         return False
                 elif OPcode[ins[1]][1] == "C":
-                    if errorC(ins, i) == False:
+                    if errorC(ins[1:], i) == False:
                         return False
                 elif OPcode[ins[1]][1] == "D":
-                    if errorD(ins, i) == False:
+                    if errorD(ins[1:], i) == False:
                         return False
                 elif OPcode[ins[1]][1] == "E":
-                    if errorE(ins, i) == False:
+                    if errorE(ins[1:], i) == False:
                         return False
             elif(ins[1] != "var"):
-                print("type a typo in inst" , i+1)
+                print("type a typo in inst" , errorlno(i))
                 return False
 
         elif ins[0] in OPcode.keys():
@@ -281,7 +302,7 @@ def error(lis):
         # elif OPcode[ins[0]][1] == "F":
         #   errorF(ins)
         elif(ins[0] != "var"):
-            print("type a typo in inst", i+1)
+            print("type a typo in inst", errorlno(i))
             return False
     if halt_checker(lis) == False:
         return False
@@ -292,8 +313,9 @@ def error(lis):
 
 
 f = open("input.txt", "r")
-lines=[]
+lines = []
 lines2 = [line.rstrip().split() for line in f]
+
 for i in lines2:
     if i!=[]:
         lines.append(i)
@@ -305,7 +327,7 @@ var_dic = {}
 var_list = []
 temp_var_list = []  # stores variable instructions
 program_counter = 0
-print(lines)
+
 
 for inst in lines:
         if (inst[0] == "var"):
@@ -332,13 +354,8 @@ for i in (range(len(final_input))):
             var_list.append(final_input[i])
 
 
-print(var_dic)
-print(label_dic)
 print(lines)
-#print(var_list)
-#print(label_list)
-#print(final_input)
-
+print(lines2)
 if error(lines) == True:
     for inst in final_input:
 
