@@ -94,13 +94,61 @@ def Invert(reg1, reg2):
     registers[reg1][1] = ~registers[reg2][2]
 
 def halt_checker(lis):
-    for i in range(len(lis)-1):
-        for j in lis[i]:
-            if j=='hlt':
-                print("hlt error",i)
+    flag = 0
+    for j in range(len(lis)):
+        if "hlt" in lis[j]:
+            lno = j
+            flag += 1
+
+    if flag == 0:
+        print("hlt missing")
+        return False
+    elif(flag == 1):
+        if lis[-1][-1] == "hlt":
+            return True
+        else:
+            print("hlt before termination" , lno+1)
+            return False
+    else:
+        print("hlt before termination" , lno+1)
+        return False
+
+
+def var_checker(lis):
+    flag = 0
+    count = 0
+
+    if(lis[0][0] == "var"):
+
+        for i in range(len(lis)):
+            if lis[i][0] == "var"  and len(lis[i]) == 3 and lis[i][1] in OPcode.keys() :
+                print("inst error" , i+1)
+                return False
+            if(lis[i][0] == "var" ):
+                count += 1
+
+        continous_var=0
+        j=0
+        while j <len(lis)-1 and (lis[j][0] == lis[j + 1][0]) and lis[j][0] == "var":
+            j+=1
+            continous_var+=1
+        continous_var+=1
+
+
+        if(continous_var!=count):
+
+            for t1 in range(j+1 , len(lis)):
+                if (lis[t1][0] == "var"):
+                    lno = t1
+                    break
+            print("var discont" , t1 + 1)
+            return False
+    else:
+        for i in range(len(lis)):
+            if(lis[i][0]=="var"):
+                print("var beech me h" , i+1)
                 return False
 
-    return True
 
 
 def errorA(lisa, lno):
@@ -108,10 +156,10 @@ def errorA(lisa, lno):
         if lisa[1] in register_wo_flag.keys() and lisa[2] in register_wo_flag.keys() and lisa[3] in register_wo_flag.keys():
             return True
         else:
-            print("register name error", lno)
+            print("register name error", lno+1)
             return False
     else:
-        print("wrong syntax error", lno)
+        print("wrong syntax error", lno+1)
         return False
 
 
@@ -120,14 +168,14 @@ def errorB(lisb, lno):
         if lisb[1] in register_wo_flag.keys() and lisb[2][0] == "$" and 0 <= lisb[2][1:] <= 255:
             return True
         elif lisb[2][1:]<0 or lisb[2][1:]>255:
-            print("IMMEDIATE out of range",lno)
+            print("IMMEDIATE out of range",lno+1)
             return False
         else:
-            print("register name error", lno)
+            print("register name error", lno+1)
             return False
 
     else:
-        print("wrong syntax error", lno)
+        print("wrong syntax error", lno+1)
         return False
 
 
@@ -136,10 +184,10 @@ def errorC(lisa, lno):
         if lisa[1] in register_wo_flag.keys() and lisa[2] in register_wo_flag.keys():
             return True
         else:
-            print("register name error", lno)
+            print("register name error", lno+1)
             return False
     else:
-        print("wrong syntax error", lno)
+        print("wrong syntax error", lno+1)
         return False
 
 
@@ -148,13 +196,13 @@ def errorD(lisd, lno):
         if lisd[1] in register_wo_flag.keys() and lisd[2] in var_dic.keys():
             return True
         elif lisd[1] not in register_wo_flag.keys():
-             print("reggister error",lno)
+             print("reggister error",lno+1)
              return False
         else:
-            print("use of undefinded variables ",lno)
+            print("use of undefinded variables ",lno+1)
             return False
     else:
-        print("wrong syntax error", lno)
+        print("wrong syntax error", lno+1)
         return False
 
 
@@ -163,15 +211,18 @@ def errorE(lise, lno):
         if lise[1] in label_dic:
             return True
         else:
-            print("Use of undefined label ", lno)
+            print("Use of undefined label ", lno+1)
             return False
     else:
-        print("wrong syntax error", lno)
+        print("wrong syntax error", lno+1)
         return False
 
 
 def error(lis):
-    halt_checker(lis)
+    
+    if var_checker(lis) == False:
+        return False
+    
     for i in range(len(lis)):
         ins = lis[i]
         if ins[0] == "mov":
@@ -180,20 +231,14 @@ def error(lis):
                    continue # have to deal intermeditae error here
 
                 else:
-                    print("register name error", i)
+                    print("register name error", i+1)
 
                     return False
 
             else:
-                print("wrong syntax error", i)
+                print("wrong syntax error", i+1)
 
                 return False
-
-        if ins[0] == "var":
-            if len(ins) == 3:
-                continue
-            else:
-                print("gg1")
 
         if ins[0][-1] == ":":
             if ins[1] in OPcode.keys():
@@ -213,10 +258,8 @@ def error(lis):
                 elif OPcode[ins[1]][1] == "E":
                     if errorE(ins, i) == False:
                         return False
-            # elif OPcode[ins[1]][1] == "F":
-            #  errorF(ins)
-            else:
-                print("type a typo in inst")
+            elif(ins[1] != "var"):
+                print("type a typo in inst" , i+1)
                 return False
 
         elif ins[0] in OPcode.keys():
@@ -237,9 +280,12 @@ def error(lis):
                     return False
         # elif OPcode[ins[0]][1] == "F":
         #   errorF(ins)
-        else:
-            print("type a typo in inst", i)
+        elif(ins[0] != "var"):
+            print("type a typo in inst", i+1)
             return False
+    if halt_checker(lis) == False:
+        return False
+    var_checker(lis)
     return True
 
 
