@@ -108,16 +108,16 @@ def halt_checker(lis):
             flag += 1
 
     if flag == 0:
-        print("hlt missing")
+        print("hlt Statement Missing")
         return False
     elif(flag == 1):
         if lis[-1][-1] == "hlt":
             return True
         else:
-            print("hlt before termination" , errorlno(lno))
+            print("Error : hlt Before Termination in Line " , errorlno(lno))
             return False
     else:
-        print("hlt before termination" , errorlno(lno))
+        print("Error : hlt Before Termination in Line " , errorlno(lno))
         return False
 
 
@@ -153,7 +153,7 @@ def var_checker(lis):
     else:
         for i in range(len(lis)):
             if(lis[i][0]=="var"):
-                print("var beech me h" , errorlno(i))
+                print("Error : Variable cannot be declared in Line " , errorlno(i))
                 return False
 
 
@@ -164,10 +164,10 @@ def errorA(lisa, lno):
         if lisa[1] in register_wo_flag.keys() and lisa[2] in register_wo_flag.keys() and lisa[3] in register_wo_flag.keys():
             return True
         else:
-            print("register name error", errorlno(lno))
+            print("Error : Register name is incorrect in Line ", errorlno(lno))
             return False
     else:
-        print("wrong syntax error", errorlno(lno))
+        print("Error : Wrong Syntax in Line ", errorlno(lno))
         return False
 
 
@@ -176,18 +176,18 @@ def errorB(lisb, lno):
         if lisb[1] in register_wo_flag.keys() and lisb[2][0] == "$" and lisb[2][1:].isnumeric() and 0 <= int(lisb[2][1:]) <= 255:
             return True
         elif(lisb[2][1:].isnumeric() == False):
-            print("syntax error" , errorlno(lno))
+            print("Error : Wrong Syntax in Line " , errorlno(lno))
             return False
 
         elif int(lisb[2][1:])<0 or int(lisb[2][1:])>255:
-            print("IMMEDIATE out of range",errorlno(lno))
+            print("Error : Value of Immediate is out of range in Line ",errorlno(lno))
             return False
         else:
-            print("register name error", errorlno(lno))
+            print("Error : Register name is incorrect in Line ", errorlno(lno))
             return False
 
     else:
-        print("wrong syntax error", errorlno(lno))
+        print("Error : Wrong Syntax in Line ", errorlno(lno))
         return False
 
 
@@ -196,10 +196,10 @@ def errorC(lisa, lno):
         if lisa[1] in register_wo_flag.keys() and lisa[2] in register_wo_flag.keys():
             return True
         else:
-            print("register name error", errorlno(lno))
+            print("Error : Register name is incorrect in Line ", errorlno(lno))
             return False
     else:
-        print("wrong syntax error", errorlno(lno))
+        print("Error : Wrong Syntax in Line ", errorlno(lno))
         return False
 
 
@@ -208,17 +208,17 @@ def errorD(lisd, lno):
         if lisd[1] in register_wo_flag.keys() and lisd[2] in var_dic.keys():
             return True
         elif lisd[1] not in register_wo_flag.keys():
-             print("register error", errorlno(lno))
+             print("Error : Register name is incorrect in Line ", errorlno(lno))
              return False
         elif lisd[1] in register_wo_flag.keys() and lisd[2]+":" in label_dic.keys():
-            print("misuse of label as variable ", errorlno(lno))
+            print("Error : Misuse of label as variable in Line ", errorlno(lno))
             return False
         else:
-            print("use of un defined variable" , errorlno(lno) )
+            print("Error : Use of undefined variable in Line " , errorlno(lno) )
             return False
 
     else:
-        print("wrong syntax error", errorlno(lno) )
+        print("Error : Wrong Syntax in Line ", errorlno(lno) )
         return False
 
 
@@ -227,10 +227,10 @@ def errorE(lise, lno):
         if lise[1] in label_dic:
             return True
         else:
-            print("Use of undefined label ", errorlno(lno) )
+            print("Error : Use of undefined label in Line ", errorlno(lno) )
             return False
     else:
-        print("wrong syntax error", errorlno(lno) )
+        print("Error : Wrong Syntax in Line ", errorlno(lno) )
         return False
 
 
@@ -247,12 +247,12 @@ def error(lis):
                    continue # have to deal intermeditae error here
 
                 else:
-                    print("register name error", errorlno(i) )
+                    print("Error : Register name is incorrect in Line ", errorlno(i) )
 
                     return False
 
             else:
-                print("wrong syntax error", errorlno(i))
+                print("Error : Wrong Syntax in Line ", errorlno(i))
 
                 return False
 
