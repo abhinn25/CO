@@ -74,6 +74,9 @@ def var_checker(lis):
         if lis[i][0] == "var" and len(lis[i]) != 3:
             print("Error : Syntax error",errorlno(i))
             return False
+        elif lis[i][0] == "var" and len(lis[i]) == 3 and lis[i][1].isnumeric():
+            print("Error : Variable name should be alphanumeric ",errorlno(i))
+            return False
 
     if(lis[0][0] == "var"):
 
