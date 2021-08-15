@@ -1,4 +1,4 @@
 #!/bin/bash
-
+python3 CO.py
 # Add command to run your program here
-echo "Hello World"
+
