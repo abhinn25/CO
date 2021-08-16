@@ -103,3 +103,27 @@ def c_type(inst):
             registers["FLAGS"][1][3] = 1
     elif OPcode[instruction[0:5]][0] == "mov":
         registers[instruction[10:13]][1] = registers[instruction[13:]][1]
+
+def execute(inst):
+    if OPcode[instruction[0:5]][1] == "A":
+        a_type(inst)
+    elif OPcode[instruction[0:5]][1] == "B":
+        b_type(inst)
+    elif OPcode[instruction[0:5]][1] == "C":
+         c_type(inst)
+    # elif OPcode[instruction[0:5]][1] == "D":
+    #     #d_type(inst)
+    # elif OPcode[instruction[0:5]][1] == "E":
+    #     #e_type(inst)
+
+
+while mem[PC][0:5] != "10011":
+
+    instruction = mem[PC]
+    execute(instruction)
+    PC += 1
+
+
+print(registers)
+
+
