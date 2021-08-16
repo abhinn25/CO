@@ -73,3 +73,33 @@ def a_type(inst):
 
     elif OPcode[instruction[0:5]][0] == "xor":
         registers[inst[7:10]][1] = registers[inst[10:13]][1] ^ registers[inst[13:]][1]
+
+def b_type(inst):
+    if OPcode[instruction[0:5]][0] == "mov":
+        registers[instruction[5:8]][1] = binaryToDecimal(instruction[8:])
+
+    elif OPcode[instruction[0:5]][0] == "rs":
+        registers[instruction[5:8]][1] = registers[instruction[5:8]][1]>>binaryToDecimal(instruction[8:])
+
+    elif OPcode[instruction[0:5]][0] == "ls":
+        registers[instruction[5:8]][1] = registers[instruction[5:8]][1]<<binaryToDecimal(instruction[8:])
+
+def c_type(inst):
+    if OPcode[instruction[0:5]][0] == "div":
+        registers["R0"][1] = binaryToDecimal(instruction[10:13])/binaryToDecimal(instruction[13:])
+        registers["R1"][1] = binaryToDecimal(instruction[10:13])%binaryToDecimal(instruction[13:])
+
+
+    elif OPcode[instruction[0:5]][0] == "not":
+        registers[instruction[10:13]][1] = ~binaryToDecimal(instruction[13:])
+
+    elif OPcode[instruction[0:5]][0] == "cmp":
+        registers[instruction[10:13]][1] = ~binaryToDecimal(instruction[13:])
+        if registers[instruction[10:13]][1] > registers[instruction[13:]][1]:
+            registers["FLAGS"][1][2]=1
+        elif registers[instruction[10:13]][1] < registers[instruction[13:]][1]:
+            registers["FLAGS"][1][2] = 1
+        elif registers[instruction[10:13]][1] == registers[instruction[13:]][1]:
+            registers["FLAGS"][1][3] = 1
+    elif OPcode[instruction[0:5]][0] == "mov":
+        registers[instruction[10:13]][1] = registers[instruction[13:]][1]
