@@ -1,6 +1,9 @@
-f = open("input.txt", "r")
+import sys
+complete_input = sys.stdin.read()
+f=(complete_input.split("\n"))
 lines = [line.rstrip() for line in f]
-# print(lines)
+
+
 OPcode = {"00000": ("add", "A"),
           "00001": ("sub", "A"),
           "00110": ("mul", "A"),
@@ -182,6 +185,11 @@ while mem[PC][0:5] != "10011":
     print("0" * (8 - len(bin(PC)[2:])) + bin(PC)[2:], end= " ")
     printreg()
     PC += 1
+
+instruction = mem[PC]
+execute(instruction)
+print("0" * (8 - len(bin(PC)[2:])) + bin(PC)[2:], end= " ")
+printreg()
 
 for i in mem:
     print(i)
