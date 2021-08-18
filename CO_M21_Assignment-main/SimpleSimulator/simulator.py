@@ -44,10 +44,8 @@ for i in range(len(lines)):
 # print(registers)
 # print(mem , len(mem))
 
-
 def binaryToDecimal(n):
     return int(n, 2)
-
 
 def a_type(inst):
     if OPcode[inst[0:5]][0] == "add":
@@ -78,7 +76,6 @@ def a_type(inst):
     elif OPcode[inst[0:5]][0] == "xor":
         registers[inst[7:10]][1] = registers[inst[10:13]][1] ^ registers[inst[13:]][1]
 
-
 def b_type(inst):
 
     flagreset()
@@ -91,7 +88,6 @@ def b_type(inst):
 
     elif OPcode[instruction[0:5]][0] == "ls":
         registers[inst[5:8]][1] = registers[inst[5:8]][1] << binaryToDecimal(inst[8:])
-
 
 def c_type(inst):
 
@@ -117,22 +113,18 @@ def c_type(inst):
 
         if inst[13:] == "111":
             registers[inst[10:13]][1] = 8*registers["111"][1][0] + 4*registers["111"][1][1] + 2*registers["111"][1][2] + registers["111"][1][3]
+            flagreset()
         else:
             flagreset()
             registers[inst[10:13]][1] = registers[inst[13:]][1]
 
-
-var_dic = {}
-
-
 def d_type(inst):
     flagreset()
     if OPcode[inst[0:5]][0] == "st":
-        var_dic[inst[8:]] = registers[inst[5:8]][1]
+        mem[binaryToDecimal(inst[8:])] = dectobin(registers[inst[5:8]][1])
 
     elif OPcode[inst[0:5]][0] == "ld":
-        registers[inst[5:8]][1] = var_dic[inst[8:]]
-
+        registers[inst[5:8]][1] = binaryToDecimal(mem[binaryToDecimal(inst[8:])])
 
 def e_type(inst):
     global PC
@@ -150,7 +142,6 @@ def e_type(inst):
 
     flagreset()
 
-
 def execute(inst):
     if OPcode[inst[0:5]][1] == "A":
         a_type(inst)
@@ -163,9 +154,7 @@ def execute(inst):
     elif OPcode[inst[0:5]][1] == "E":
         e_type(inst)
 
-
 PC = 0
-
 
 def printreg():
     print(dectobin(registers["000"][1]), dectobin(registers["001"][1]), dectobin(registers["010"][1]), dectobin(registers["011"][1]), dectobin(registers["100"][1]), dectobin(registers["101"][1]), dectobin(registers["110"][1]), dectobin( 8*registers["111"][1][0] + 4*registers["111"][1][1] + 2*registers["111"][1][2] + registers["111"][1][3]))
@@ -173,10 +162,8 @@ def printreg():
 def dectobin(value):
     return "0" * (16 - len(bin(value)[2:])) + bin(value)[2:]
 
-
 def flagreset():
     registers["111"][1] = [0, 0, 0, 0]
-
 
 while mem[PC][0:5] != "10011":
     #print(PC)
