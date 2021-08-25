@@ -1,4 +1,5 @@
 import sys
+import matplotlib.pyplot as plt
 
 complete_input = sys.stdin.read()
 f = (complete_input.split("\n"))
@@ -52,7 +53,7 @@ def binaryToDecimal(n):
 
 def a_type(inst):
     flagreset()
-    
+
     if OPcode[inst[0:5]][0] == "add":
         registers[inst[7:10]][1] = registers[inst[10:13]][1] + registers[inst[13:]][1]
         if registers[inst[7:10]][1] > 65535:
@@ -174,8 +175,10 @@ def printreg():
             8 * registers["111"][1][0] + 4 * registers["111"][1][1] + 2 * registers["111"][1][2] + registers["111"][1][
                 3]))
 
+
 def overflowtobin(value):
     return binaryToDecimal((bin(value)[2:])[-16:])
+
 
 def dectobin(value):
     return "0" * (16 - len(bin(value)[2:])) + bin(value)[2:]
@@ -185,18 +188,34 @@ def flagreset():
     registers["111"][1] = [0, 0, 0, 0]
 
 
+
+y=[]
+
 while mem[PC][0:5] != "10011":
     # print(PC)
     instruction = mem[PC]
+    y.append(PC)
     print("0" * (8 - len(bin(PC)[2:])) + bin(PC)[2:], end=" ")
     execute(instruction)
     printreg()
     PC += 1
 
+
+
+
 print("0" * (8 - len(bin(PC)[2:])) + bin(PC)[2:], end=" ")
 printreg()
+
+y.append(PC)
 
 for i in mem:
     print(i)
 
-# print(registers)
+x = []
+for i in range(len(y)):
+    x.append(i+1)
+plt.scatter(x, y)
+plt.xlabel('Cycle Number')
+plt.ylabel('Memory Address ')
+plt.title('Question Three')
+plt.show()
