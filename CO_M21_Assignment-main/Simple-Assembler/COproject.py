@@ -1,3 +1,5 @@
+import sys
+
 OPcode = {"add": ("00000", "A"),
           "sub": ("00001", "A"),
           "mul": ("00110", "A"),
@@ -71,6 +73,9 @@ def var_checker(lis):
     for i in range(len(lis)):
         if lis[i][0] == "var" and len(lis[i]) != 3:
             print("Error : Syntax error",errorlno(i))
+            return False
+        elif lis[i][0] == "var" and len(lis[i]) == 3 and lis[i][1].isnumeric():
+            print("Error : Variable name should be alphanumeric ",errorlno(i))
             return False
 
     if(lis[0][0] == "var"):
@@ -259,8 +264,13 @@ def error(lis):
     return True
 
 
-f = open("input.txt", "r")
+
+complete_input = sys.stdin.read()
+
+f=(complete_input.split("\n"))
+
 lines = []
+
 lines2 = [line.rstrip().split() for line in f]
 
 for i in lines2:
@@ -395,5 +405,3 @@ if error(lines) == True:
 
         elif OPcode[inst[0]][1] == "F":
             print_F(inst)
-
-
