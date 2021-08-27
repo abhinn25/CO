@@ -53,24 +53,33 @@ def binaryToDecimal(n):
 
 def a_type(inst):
     flagreset()
-
     if OPcode[inst[0:5]][0] == "add":
-        registers[inst[7:10]][1] = registers[inst[10:13]][1] + registers[inst[13:]][1]
-        if registers[inst[7:10]][1] > 65535:
+
+        if registers[inst[10:13]][1] + registers[inst[13:]][1] > 65535:
+
             registers[inst[7:10]][1] = overflowtobin(registers[inst[10:13]][1] + registers[inst[13:]][1])
-            registers["111"][0] = 1
+            registers["111"][1][0] = 1
+        else:
+
+            registers[inst[7:10]][1] = registers[inst[10:13]][1] + registers[inst[13:]][1]
+
 
     elif OPcode[inst[0:5]][0] == "sub":
-        registers[inst[7:10]][1] = registers[inst[10:13]][1] - registers[inst[13:]][1]
-        if registers[inst[7:10]][1] < 0:
+
+        if registers[inst[10:13]][1] - registers[inst[13:]][1] < 0:
             registers[inst[7:10]][1] = 0
-            registers["111"][0] = 1
+            registers["111"][1][0] = 1
+        else:
+            registers[inst[7:10]][1] = registers[inst[10:13]][1] - registers[inst[13:]][1]
+
 
     elif OPcode[inst[0:5]][0] == "mul":
-        registers[inst[7:10]][1] = registers[inst[10:13]][1] * registers[inst[13:]][1]
-        if registers[inst[7:10]][1] > 65535:
+        if registers[inst[10:13]][1] * registers[inst[13:]][1] > 65535:
             registers[inst[7:10]][1] = overflowtobin(registers[inst[10:13]][1] + registers[inst[13:]][1])
-            registers["111"][0] = 1
+            registers["111"][1][0] = 1
+
+        else:
+            registers[inst[7:10]][1] = registers[inst[10:13]][1] * registers[inst[13:]][1]
 
     elif OPcode[inst[0:5]][0] == "or":
         registers[inst[7:10]][1] = registers[inst[10:13]][1] | registers[inst[13:]][1]
@@ -78,6 +87,7 @@ def a_type(inst):
 
     elif OPcode[inst[0:5]][0] == "and":
         registers[inst[7:10]][1] = registers[inst[10:13]][1] & registers[inst[13:]][1]
+
 
     elif OPcode[inst[0:5]][0] == "xor":
         registers[inst[7:10]][1] = registers[inst[10:13]][1] ^ registers[inst[13:]][1]
@@ -99,12 +109,21 @@ def b_type(inst):
 def c_type(inst):
     if OPcode[inst[0:5]][0] == "div":
         flagreset()
-        registers["000"][1] = binaryToDecimal(inst[10:13]) / binaryToDecimal(inst[13:])
-        registers["001"][1] = binaryToDecimal(inst[10:13]) % binaryToDecimal(inst[13:])
+        registers["000"][1] = registers[inst[10:13]][1] // registers[inst[13:]][1]
+
+        registers["001"][1] = registers[inst[10:13]][1] % registers[inst[13:]][1]
 
     elif OPcode[inst[0:5]][0] == "not":
         flagreset()
-        registers[inst[10:13]][1] = ~binaryToDecimal(inst[13:])
+        temp = dectobin(registers[inst[13:]][1])
+        temp2 = ""
+        for i in temp:
+            if i == '0' :
+                temp2 += '1'
+            else:
+                temp2 += '0'
+        registers[inst[10:13]][1] = binaryToDecimal(temp2)
+
 
     elif OPcode[inst[0:5]][0] == "cmp":
 
@@ -118,8 +137,7 @@ def c_type(inst):
     elif OPcode[inst[0:5]][0] == "mov":
 
         if inst[13:] == "111":
-            registers[inst[10:13]][1] = 8 * registers["111"][1][0] + 4 * registers["111"][1][1] + 2 * \
-                                        registers["111"][1][2] + registers["111"][1][3]
+            registers[inst[10:13]][1] = 8 * registers["111"][1][0] + 4 * registers["111"][1][1] + 2 *registers["111"][1][2] + registers["111"][1][3]
             flagreset()
         else:
             flagreset()
@@ -172,11 +190,11 @@ def printreg():
     print(dectobin(registers["000"][1]), dectobin(registers["001"][1]), dectobin(registers["010"][1]),
           dectobin(registers["011"][1]), dectobin(registers["100"][1]), dectobin(registers["101"][1]),
           dectobin(registers["110"][1]), dectobin(
-            8 * registers["111"][1][0] + 4 * registers["111"][1][1] + 2 * registers["111"][1][2] + registers["111"][1][
-                3]))
+            8 * registers["111"][1][0] + 4 * registers["111"][1][1] + 2 * registers["111"][1][2] + registers["111"][1][3]))
 
 
 def overflowtobin(value):
+
     return binaryToDecimal((bin(value)[2:])[-16:])
 
 
@@ -202,7 +220,7 @@ while mem[PC][0:5] != "10011":
 
 
 
-
+flagreset()
 print("0" * (8 - len(bin(PC)[2:])) + bin(PC)[2:], end=" ")
 printreg()
 
