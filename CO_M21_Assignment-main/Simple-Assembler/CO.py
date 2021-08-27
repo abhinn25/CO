@@ -63,7 +63,7 @@ def halt_checker(lis):
             print("Error : hlt Before Termination in Line " , errorlno(lno))
             return False
     else:
-        print("Error : hlt Before Termination in Line " , errorlno(lno))
+        print("Error : hlt Before Termination in Line" , errorlno(lno))
         return False
 
 
@@ -75,14 +75,14 @@ def var_checker(lis):
             print("Error : Syntax error",errorlno(i))
             return False
         elif lis[i][0] == "var" and len(lis[i]) == 3 and lis[i][1].isnumeric():
-            print("Error : Variable name should be alphanumeric ",errorlno(i))
+            print("Error : Variable name should be alphanumeric. Error in line:- ",errorlno(i))
             return False
 
     if(lis[0][0] == "var"):
 
         for i in range(len(lis)):
             if lis[i][0] == "var"  and len(lis[i]) == 3 and lis[i][1] in OPcode.keys() :
-                print("Error : Instruction name cannot be used as a variable " , errorlno(i))
+                print("Error : Instruction name cannot be used as a variable. Error in line:- " , errorlno(i))
                 return False
             if(lis[i][0] == "var" ):
                 count += 1
@@ -212,6 +212,13 @@ def error(lis):
                 return False
 
         if ins[0][-1] == ":":
+            if(len(ins[0])==1):
+                print("Error : Invalid instruction in Line ", errorlno(i))
+                return False
+            if ins[0][:-1].isnumeric():
+                print("Error : Label name should be alphanumeric. ", errorlno(i))
+                return False
+
 
             if len(ins) == 1:
                 print("Error : Invalid instruction in Line ",errorlno(i))
@@ -233,9 +240,14 @@ def error(lis):
                 elif OPcode[ins[1]][1] == "E":
                     if errorE(ins[1:], i) == False:
                         return False
-            elif(ins[1] != "var"):
-                print("Error : Invalid instruction in Line " , errorlno(i))
+            elif(ins[1] == "var"):
+                print("Error : Cannot declare variable inside label " , errorlno(i))
                 return False
+            else :
+                print("Error : Invalid instruction in Line ", errorlno(i))
+                return False
+
+
 
         elif ins[0] in OPcode.keys():
             if OPcode[ins[0]][1] == "A":
